@@ -7,9 +7,6 @@
     "target": "es2016"
   },
   "module": {
-    "type": "commonjs",
-    "strict": true,
-    "lazy": false,
-    "noInterop": false
+    "type": "commonjs"
   }
 }
