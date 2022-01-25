@@ -1,7 +1,7 @@
 // const {Sequelize} = require("sequelize");
 import { Sequelize } from sequelize;
 
-module.exports = class Apply extends Sequelize.Model {
+export default class Apply extends Sequelize.Model {
     static init(sequelize){
         return super.init({
             part: {

@@ -1,6 +1,6 @@
 const {Sequelize} = require("sequelize");
 
-module.exports = class Admin extends Sequelize.Model {
+export default class Admin extends Sequelize.Model {
     static init(sequelize){
         return super.init({
             ID: {

@@ -1,9 +1,9 @@
-const Sequelize = require('sequelize');
-const User = require('./user');
-const Admin = require('./admin');
-const Apply = require('./apply');
-const Question = require('./question');
-const Univ = require('./univ');
+import Sequelize from sequelize;
+import User from './user';
+import Admin from './admin';
+import Apply from './apply';
+import Question from './question';
+import Univ from './univ';
 
 
 const env = process.env.NODE_ENV || 'development';
@@ -32,4 +32,4 @@ Apply.associate(db);
 Question.associate(db);
 Univ.associate(db);
 
-module.exports = db;
+export default db;
