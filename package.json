@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --exec swc-node src/index.ts",
+    "dev": "nodemon --exec swc-node src/index",
     "lint:eslint": "eslint src/**/*.{js,ts}",
     "prepare": "husky install"
   },

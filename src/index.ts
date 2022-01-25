@@ -15,6 +15,14 @@ app.get("/", async (req, res) => {
   res.send("hello world");
 });
 
+// sequelize.sync({ force: false }) //true면 서버 재실행 시에 디비 정보 날라감
+//   .then(() => {
+//       console.log('디비연결완료 ');
+//   })
+//   .catch((err) => {
+//       console.log(err);
+//   });
+
 app.get("/db-healthcheck", async (req, res) => {
   try {
     await sequelize.authenticate();
