@@ -9,15 +9,13 @@ import User from "./user";
 
 dotenv.config();
 
-const env = process.env.NODE_ENV || "development";
 const db = {};
 
-const sequelize = {
-  new: Sequelize(process.env.DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD)[env],
-};
+const sequelize = new Sequelize(
+  process.env.DATABASE_URL || "postgresql://localhost:5432/hephaistos",
+);
 
 db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 db.User = User;
 db.Admin = Admin;
 db.Apply = Apply;

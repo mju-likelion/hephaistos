@@ -1,31 +1,21 @@
-import dotenv from "dotenv";
 import express from "express";
-import { Sequelize } from "sequelize";
 
-dotenv.config();
+import models from "./models";
 
 const app = express();
 const port = 3000;
-
-const sequelize = new Sequelize(
-  process.env.DATABASE_URL || "postgresql://localhost:5432/hephaistos",
-);
 
 app.get("/", async (req, res) => {
   res.send("hello world");
 });
 
-// sequelize.sync({ force: false }) //true면 서버 재실행 시에 디비 정보 날라감
-//   .then(() => {
-//       console.log('디비연결완료 ');
-//   })
-//   .catch((err) => {
-//       console.log(err);
-//   });
+// 디비 연결
+models.sequelize.sync({ force: false });
 
+// 디비 확인
 app.get("/db-healthcheck", async (req, res) => {
   try {
-    await sequelize.authenticate();
+    await models.sequelize.authenticate();
     res.send("Connection has been established successfully.");
   } catch (error) {
     res.send(`Unable to connect to the database: ", ${error}`);
