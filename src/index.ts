@@ -1,5 +1,6 @@
 import express from "express";
 
+import authRouter from "./api/auth.ts";
 import models from "./models";
 
 const app = express();
@@ -21,6 +22,9 @@ app.get("/db-healthcheck", async (req, res) => {
     res.send(`Unable to connect to the database: ", ${error}`);
   }
 });
+
+app.use(express.json());
+app.use("/api/auth", authRouter);
 
 app.listen(port, () => {
   /* eslint-disable no-console */
