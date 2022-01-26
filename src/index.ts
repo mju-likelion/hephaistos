@@ -1,6 +1,6 @@
 import express from "express";
 
-import authRouter from "./api/auth.ts";
+import authRouter from "./api/auth";
 import models from "./models";
 
 const app = express();
