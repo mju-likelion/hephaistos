@@ -9,7 +9,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "crypto": "^1.0.1",
+    "bcrypt": "^5.0.1",
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",

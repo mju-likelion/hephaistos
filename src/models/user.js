@@ -33,8 +33,8 @@ export default class User extends Sequelize.Model {
           allowNull: false,
         },
         status: {
-          type: Sequelize.ENUM("1", "2", "3", "4"),
-          allowNull: false,
+          type: Sequelize.ENUM("0", "1", "2", "3"),
+          // allowNull: true,
         },
       },
       {
