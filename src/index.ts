@@ -1,6 +1,6 @@
 import express from "express";
 
-import authRouter from "./api/auth";
+import authRouter from "./api";
 import models from "./models";
 
 const app = express();
@@ -24,7 +24,7 @@ app.get("/db-healthcheck", async (req, res) => {
 });
 
 app.use(express.json());
-app.use("/api/auth", authRouter);
+app.use("/api", authRouter);
 
 app.listen(port, () => {
   /* eslint-disable no-console */

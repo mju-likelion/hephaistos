@@ -6,8 +6,9 @@ exports.signVaildator = (req, res, next) => {
   // 이메일 첫째자리 뒤에는 -_.을 포함하여 들어올 수 있다.
   // 도메인 주소 전에는 @가 들어와야 한다.
   // .이 최소한 하나는 있어야 하며 마지막 마디는 2-3자리여야 한다.
+  // eslint-disable-next-line
   const regEmail =
-    /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
+    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
   const num = password.search(/[0-9]/g);
   const eng = password.search(/[a-z]/gi);
   const spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
@@ -49,7 +50,10 @@ exports.signVaildator = (req, res, next) => {
 exports.emailVaildator = (req, res, next) => {
   // eslint-disable-next-line
   const { email } = req.body;
-  const regEmail = /([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+  // eslint-disable-next-line
+  const regEmail =
+    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+
   if (!regEmail.test(email)) {
     return res.status(400).json({
       error: {
