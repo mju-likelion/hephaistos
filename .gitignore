@@ -139,4 +139,4 @@ dist
 
 /.idea
 # radis databases
-dump
+dump.rdb

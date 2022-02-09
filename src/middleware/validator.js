@@ -9,9 +9,9 @@ exports.signVaildator = (req, res, next) => {
   // eslint-disable-next-line
   const regEmail =
     /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-  const num = password.search(/[0-9]/g);
-  const eng = password.search(/[a-z]/gi);
-  const spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+  const numCount = password.search(/[0-9]/g);
+  const englishCount = password.search(/[a-z]/gi);
+  const specialCharactersCount = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/g);
   const check = /^[0-9]*$/;
 
   if (!regEmail.test(email)) {
@@ -23,12 +23,12 @@ exports.signVaildator = (req, res, next) => {
   }
   // 8~20자리 이내, 비밀번호는 공백 없이, 영문,숫자,특수문자 혼합
   if (
-    password.length < 8 &&
-    password.length > 20 &&
-    password.search(/\s/) !== -1 &&
-    num < 0 &&
-    eng < 0 &&
-    spe < 0
+    password.length < 8 ||
+    password.length > 20 ||
+    password.search(/\s/) !== -1 ||
+    numCount < 0 ||
+    englishCount < 0 ||
+    specialCharactersCount < 0
   ) {
     return res.status(400).json({
       error: {
@@ -37,7 +37,7 @@ exports.signVaildator = (req, res, next) => {
     });
   }
   // 숫자로만 이루어져있는지 11글자인지
-  if (!check.test(phone) && !phone.length === 11) {
+  if (!check.test(phone) || !(phone.length === 11)) {
     return res.status(400).json({
       error: {
         message: "회원가입 형식이 올바르지 않습니다.",

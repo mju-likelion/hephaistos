@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import { Router } from "express";
 import { sign } from "jsonwebtoken";
-import { random } from "lodash";
+import { random, times } from "lodash";
 import nodemailer from "nodemailer";
 import { createClient } from "redis";
 
@@ -13,8 +13,8 @@ dotenv.config();
 const auth = Router();
 // redis 서버 연결
 const redisClient = createClient({
-  host: "127.0.0.1",
-  port: 6379,
+  host: process.env.RADIS_HOST,
+  port: process.env.RADIS_PORT,
 });
 redisClient.connect();
 
@@ -22,8 +22,14 @@ redisClient.connect();
 auth.post("/email-verify", emailVaildator, async (req, res) => {
   // eslint-disable-next-line
   const { email } = req.body;
-  // 코드 생성
-  const code = random(100000, 999999);
+  // 토큰 생성
+  let token = times(6, () => random(35).toString(36)).join("");
+  // eslint-disable-next-line
+  while (await redisClient.get(token)) {
+    // redis에 토큰이 같을시 재발행
+    token = times(6, () => random(35).toString(36)).join("");
+  }
+  // 메일 옵션 지정
   const transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -34,13 +40,13 @@ auth.post("/email-verify", emailVaildator, async (req, res) => {
       pass: process.env.NODEMAILER_PASS,
     },
   });
-  // 메일 옵션 지정
+  // 메일 전송
   transporter.sendMail(
     {
       from: `pjm2207@likelion.org`,
       to: email,
       subject: "멋쟁이사자처럼 10기 이메일인증",
-      html: `<a href=http://localhost:3000/api/auth/email-verify/${code}>인증하기</a>`,
+      html: `<a href=http://localhost:3000/api/auth/email-verify/${token}>인증하기</a>`,
     },
     err => {
       if (err) {
@@ -51,7 +57,8 @@ auth.post("/email-verify", emailVaildator, async (req, res) => {
         });
       }
       transporter.close();
-      redisClient.lPush("emailCode", String(code)); // redis에 emailCodelist에 code 저장
+      redisClient.set(token, email); // redis에 emailCode key:value 에 token:email 저장
+      redisClient.expire(token, 24 * 60 * 60); // 이메일 인증기한은 1일
       return res.json({
         data: {
           message: "인증용 이메일을 보냈습니다. 이메일을 확인해주세요.",
@@ -66,12 +73,11 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
   // eslint-disable-next-line
   const { emailToken } = req.params;
   // redis의 code가 담긴 list를 반환
-  const redisCode = await redisClient.lRange("emailCode", 0, -1);
-
+  const redisToken = await redisClient.get(emailToken);
   // list에 code가 있을시 User.create
-  if (redisCode.find(code => code === emailToken)) {
+  if (redisToken) {
     await User.create({
-      email: "",
+      email: redisToken,
       email_verify: true,
       password: "",
       name: "",
@@ -79,6 +85,7 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
       major: "",
       status: "0",
     });
+    redisClient.del(emailToken);
     return res.status(200).json({
       data: {
         message: "이메일 인증에 성공하셨습니다",
@@ -105,11 +112,9 @@ auth.post("/sign-up", signVaildator, async (req, res) => {
     // 디비에 이메일이 존재하고 이메일 인증이 true
     await User.update(
       {
-        email,
         password: hash,
         name,
         phone,
-        apply_univ: univ,
         major,
       },
       { where: { email } },
