@@ -1,51 +1,49 @@
-import Sequelize from "sequelize";
+import { DataTypes, Model } from "sequelize";
 
-export default class User extends Sequelize.Model {
+class User extends Model {
   static init(sequelize) {
     return super.init(
       {
         name: {
-          type: Sequelize.STRING(5),
+          type: DataTypes.STRING(5),
           allowNull: false,
         },
         email: {
-          type: Sequelize.STRING(30),
+          type: DataTypes.STRING(30),
           allowNull: false,
         },
-        email_verify: {
-          type: Sequelize.BOOLEAN,
+        emailVerify: {
+          type: DataTypes.BOOLEAN,
           allowNull: false,
         },
         password: {
-          type: Sequelize.STRING,
+          type: DataTypes.STRING,
           allowNull: false,
         },
         phone: {
-          type: Sequelize.STRING(15),
-          allowNull: false,
-        },
-        apply_univ: {
-          type: Sequelize.STRING(10),
+          type: DataTypes.STRING(15),
           allowNull: false,
         },
         major: {
-          type: Sequelize.STRING(10),
+          type: DataTypes.STRING(15),
           allowNull: false,
         },
         status: {
-          // (0: 최종지원전, 1: 1차탈락, 2: 1차합격, 3: 2차탈락, 4: 2차합격)
-          type: Sequelize.ENUM("0", "1", "2", "3", "4", "5"),
+          type: DataTypes.ENUM(
+            "complete",
+            "first-fail",
+            "first-pass",
+            "second-fail",
+            "second-pass",
+          ),
           allowNull: false,
           defaulteValue: "0",
         },
       },
       {
         sequelize,
-        timestamps: true,
-        underscored: false,
-        paranoid: false,
         modelName: "User",
-        tableName: "users",
+        tableName: "user",
         charset: "utf8mb4",
         collate: "utf8mb4_general_ci",
       },
@@ -53,7 +51,8 @@ export default class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasOne(db.Apply, { foreignKey: "UserId", sourceKey: "id" });
-    db.User.belongsTo(db.Univ, { foreignKey: "UnivId", sourceKey: "id" });
+    db.User.hasOne(db.Apply, { foreignKey: { name: "userId", allowNull: false }, sourceKey: "id" });
   }
 }
+
+export default User;
