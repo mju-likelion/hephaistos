@@ -12,7 +12,7 @@ exports.signVaildator = (req, res, next) => {
   const numCount = password.search(/[0-9]/g);
   const englishCount = password.search(/[a-z]/gi);
   const specialCharactersCount = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/g);
-  const check = /^[0-9]*$/;
+  const numCheck = /^[0-9]*$/;
 
   if (!regEmail.test(email)) {
     return res.status(400).json({
@@ -37,7 +37,7 @@ exports.signVaildator = (req, res, next) => {
     });
   }
   // 숫자로만 이루어져있는지 11글자인지
-  if (!check.test(phone) || !(phone.length === 11)) {
+  if (!numCheck.test(phone) && !(phone.length === 11)) {
     return res.status(400).json({
       error: {
         message: "회원가입 형식이 올바르지 않습니다.",

@@ -116,6 +116,7 @@ auth.post("/sign-up", signVaildator, async (req, res) => {
         name,
         phone,
         major,
+        univ,
       },
       { where: { email } },
     );
