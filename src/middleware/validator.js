@@ -37,7 +37,7 @@ exports.signVaildator = (req, res, next) => {
     });
   }
   // 숫자로만 이루어져있는지 11글자인지
-  if (!numCheck.test(phone) && !(phone.length === 11)) {
+  if (!numCheck.test(phone) || !(phone.length === 11)) {
     return res.status(400).json({
       error: {
         message: "회원가입 형식이 올바르지 않습니다.",
