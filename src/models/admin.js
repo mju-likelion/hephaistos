@@ -1,36 +1,31 @@
-import Sequelize from "sequelize";
+import { DataTypes, Model } from "sequelize";
 
-export default class Admin extends Sequelize.Model {
+class Admin extends Model {
   static init(sequelize) {
     return super.init(
       {
-        ID: {
-          type: Sequelize.STRING(20),
+        email: {
+          type: DataTypes.STRING,
           allowNull: false,
         },
         password: {
-          type: Sequelize.STRING,
+          type: DataTypes.STRING,
           allowNull: false,
         },
-        univ_verify: {
-          type: Sequelize.BOOLEAN(10),
+        isVerified: {
+          type: DataTypes.BOOLEAN,
           allowNull: false,
         },
       },
       {
         sequelize,
-        timestamps: true,
-        underscored: false,
-        paranoid: false,
         modelName: "Admin",
-        tableName: "admins",
+        tableName: "admin",
         charset: "utf8mb4",
         collate: "utf8mb4_general_ci",
       },
     );
   }
-
-  static associate(db) {
-    db.Admin.belongsTo(db.Univ, { foreignKey: "UnivId", sourceKey: "id" });
-  }
 }
+
+export default Admin;
