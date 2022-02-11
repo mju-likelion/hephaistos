@@ -6,28 +6,30 @@ class User extends Model {
       {
         name: {
           type: DataTypes.STRING(5),
+          allowNull: false,
         },
         email: {
           type: DataTypes.STRING(30),
+          allowNull: false,
         },
         emailVerify: {
           type: DataTypes.BOOLEAN,
-        },
-        emailToken: {
-          type: DataTypes.STRING(6),
+          allowNull: false,
         },
         password: {
           type: DataTypes.STRING,
+          allowNull: false,
         },
         phone: {
           type: DataTypes.STRING(15),
+          allowNull: false,
         },
         major: {
           type: DataTypes.STRING(15),
+          allowNull: false,
         },
         status: {
           type: DataTypes.ENUM(
-            "writing",
             "complete",
             "first-fail",
             "first-pass",
@@ -35,7 +37,6 @@ class User extends Model {
             "second-pass",
           ),
           allowNull: false,
-          defaulteValue: "0",
         },
       },
       {
