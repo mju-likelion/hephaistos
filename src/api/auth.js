@@ -22,6 +22,10 @@ redisClient.connect();
 auth.post("/email-verify", emailVaildator, async (req, res) => {
   // eslint-disable-next-line
   const { email } = req.body;
+  // if(await redisClient.get(emailToken))
+  // if(await User.findOne({ where: { email }})){
+
+  // }
   // 토큰 생성
   let token = times(6, () => random(35).toString(36)).join("");
   // eslint-disable-next-line
@@ -78,12 +82,13 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
   if (redisToken) {
     await User.create({
       email: redisToken,
-      email_verify: true,
+      emailVerify: true,
+      emailToken: "",
       password: "",
       name: "",
       phone: "",
       major: "",
-      status: "0",
+      status: "writing",
     });
     redisClient.del(emailToken);
     return res.status(200).json({
@@ -95,7 +100,7 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
   }
   return res.status(404).json({
     error: {
-      message: "요청이 올바르지 않습니다. 이메일 인증을 다시 시도해주세요.",
+      message: "요청이 올바르지 않거나, 인증기한이 지났습니다. 이메일 인증을 다시 시도해주세요.",
     },
   });
 });
@@ -176,7 +181,6 @@ auth.post("/sign-in", async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       error: {
         message: "요청이 올바르지 않습니다.",

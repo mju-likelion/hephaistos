@@ -2,6 +2,13 @@
 exports.signVaildator = (req, res, next) => {
   // eslint-disable-next-line
   const { email, password, phone } = req.body;
+  if (!email || !password || !phone) {
+    return res.status(400).json({
+      error: {
+        message: "회원가입 형식이 올바르지 않습니다.",
+      },
+    });
+  }
   // 이메일 주소 시작은 숫자나 알파벳(소/대문자)로 시작한다.
   // 이메일 첫째자리 뒤에는 -_.을 포함하여 들어올 수 있다.
   // 도메인 주소 전에는 @가 들어와야 한다.
