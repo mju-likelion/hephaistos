@@ -1,5 +1,4 @@
-// email, password, name, phone, apply_univ, major, email_verify, status
-exports.signVaildator = (req, res, next) => {
+export function signVaildator(req, res, next) {
   // eslint-disable-next-line
   const { email, password, phone, major, name } = req.body;
   if (!email || !password || !phone || !major || !name) {
@@ -14,12 +13,9 @@ exports.signVaildator = (req, res, next) => {
   // 도메인 주소 전에는 @가 들어와야 한다.
   // .이 최소한 하나는 있어야 하며 마지막 마디는 2-3자리여야 한다.
   const regEmail =
-    // eslint-disable-next-line
-    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-  const numCount = password.search(/[0-9]/g);
-  const englishCount = password.search(/[a-z]/gi);
-  const specialCharactersCount = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/g);
-  const numCheck = /^[0-9]*$/;
+    /^[0-9a-zA-Z-_]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+  const regPassword = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/;
+  const regPhone = /^[0-9]{11,11}$/;
 
   if (!regEmail.test(email) && email.length > 30) {
     return res.status(400).json({
@@ -29,14 +25,7 @@ exports.signVaildator = (req, res, next) => {
     });
   }
   // 8~20자리 이내, 비밀번호는 공백 없이, 영문,숫자,특수문자 혼합
-  if (
-    password.length < 8 ||
-    password.length > 20 ||
-    password.search(/\s/) !== -1 ||
-    numCount < 0 ||
-    englishCount < 0 ||
-    specialCharactersCount < 0
-  ) {
+  if (!regPassword.test(password)) {
     return res.status(400).json({
       error: {
         message: "회원가입 형식이 올바르지 않습니다.",
@@ -44,7 +33,7 @@ exports.signVaildator = (req, res, next) => {
     });
   }
   // 숫자로만 이루어져있는지 11글자인지
-  if (!numCheck.test(phone) || !(phone.length === 11)) {
+  if (!regPhone.test(phone)) {
     return res.status(400).json({
       error: {
         message: "회원가입 형식이 올바르지 않습니다.",
@@ -59,16 +48,14 @@ exports.signVaildator = (req, res, next) => {
     });
   }
   return next();
-};
+}
 
-exports.emailVaildator = (req, res, next) => {
+export function emailVaildator(req, res, next) {
   // eslint-disable-next-line
   const { email } = req.body;
   const regEmail =
-    // eslint-disable-next-line
-    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-
-  if (!regEmail.test(email)) {
+    /^[0-9a-zA-Z-_]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+  if (!regEmail.test(email) || email.length > 30) {
     return res.status(400).json({
       error: {
         message: "회원가입 형식이 올바르지 않습니다.", // 이메일인증 단계에서 실패
@@ -76,4 +63,4 @@ exports.emailVaildator = (req, res, next) => {
     });
   }
   return next();
-};
+}

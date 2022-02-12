@@ -16,17 +16,16 @@ auth.post("/email-verify", emailVaildator, async (req, res) => {
   // eslint-disable-next-line
   const { email } = req.body;
   const user = await User.findOne({ where: { email } });
-  if (user) {
-    if (!user.emailVerify) {
-      await User.destroy({ where: { email } });
-    } else if (user.email) {
-      return res.status(403).json({
-        error: {
-          message: "이미 가입된 이메일입니다. 로그인을 진행해주세요.",
-        },
-      });
-    }
+  if (user && !user.emailVerify) {
+    await User.destroy({ where: { email } });
+  } else if (user?.email) {
+    return res.status(409).json({
+      error: {
+        message: "이미 가입된 이메일입니다. 로그인을 진행해주세요.",
+      },
+    });
   }
+
   // 토큰 생성
   let token = times(6, () => random(35).toString(36)).join("");
   // eslint-disable-next-line
@@ -47,18 +46,19 @@ auth.post("/email-verify", emailVaildator, async (req, res) => {
   });
   // 메일 전송
   transporter.sendMail({
-    from: `pjm2207@likelion.org`,
+    from: `mju@likelion.org`,
     to: email,
     subject: "멋쟁이사자처럼 10기 이메일인증",
-    html: `<a href=http://localhost:3000/api/auth/email-verify/${token}>인증하기</a>`,
+    html: `<a href="http://localhost:3000/api/auth/email-verify/${token}">인증하기</a>`,
   });
   await User.create({
     email,
     emailVerify: false,
-    password: "",
-    name: "",
-    phone: "",
-    major: token,
+    emailToken: token,
+    password: null,
+    name: null,
+    phone: null,
+    major: null,
     status: "writing",
   });
   return res.json({
@@ -73,118 +73,108 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
   // eslint-disable-next-line
   const { emailToken } = req.params;
   // DB에서 token 가져오기
-  const verifyToken = await User.findOne({ where: { major: emailToken } });
-  // list에 code가 있을시 User.create
-  if (verifyToken) {
-    await User.update(
-      {
-        email: verifyToken.email,
-        emailVerify: true,
-        emailToken: "",
-        password: "",
-        name: "",
-        phone: "",
-        major: "",
-        status: "writing",
-      },
-      { where: { email: verifyToken.email } },
-    );
-    return res.status(200).json({
-      data: {
-        message: "이메일 인증에 성공하셨습니다. 회원가입을 마무리해주세요.",
-        email: verifyToken.email,
+  const verifyToken = await User.findOne({ where: { emailToken } });
+  if (!verifyToken) {
+    return res.status(404).json({
+      error: {
+        message: "요청이 올바르지 않습니다. 이메일 인증을 다시 시도해주세요.",
       },
     });
   }
-  return res.status(404).json({
-    error: {
-      message: "요청이 올바르지 않습니다. 이메일 인증을 다시 시도해주세요.",
+  await User.update(
+    {
+      emailVerify: true,
+      emailToken: null,
+      password: null,
+      name: null,
+      phone: null,
+      major: null,
+      status: "writing",
+    },
+    { where: { email: verifyToken.email } },
+  );
+  return res.status(200).json({
+    data: {
+      message: "이메일 인증에 성공하셨습니다. 회원가입을 마무리해주세요.",
+      email: verifyToken.email,
     },
   });
 });
 
-// 회원가입(POST /api/auth/sign-up) =>
-/* eslint-disable */
+// 회원가입(POST /api/auth/sign-up)
 auth.post("/sign-up", signVaildator, async (req, res) => {
-  const { email, password, name, phone, univ, major } = req.body;
-  // body에 값이 하나라도 존재하지 않는다면
+  // eslint-disable-next-line
+  const { email, password, name, phone, major } = req.body;
   const hash = await bcrypt.hash(password, 10);
-
   const userEmail = await User.findOne({ where: { email } });
-
-  if (userEmail && userEmail.emailVerify) {
-    // 디비에 이메일이 존재하고 이메일 인증이 true
-    await User.update(
-      {
-        password: hash,
-        name,
-        phone,
-        major,
-      },
-      { where: { email } },
-    );
-    return res.status(200).json({
-      data: {
-        message: "회원가입이 완료되었습니다.",
+  // 디비에 이메일이 존재하지않거나 이메일 인증이 false
+  if (!userEmail || !userEmail?.emailVerify) {
+    return res.status(403).json({
+      error: {
+        message: "이메일 인증을 먼저 완료해주세요.",
       },
     });
   }
-  // 디비에 이메일이 존재하지 않으면
-  return res.status(403).json({
-    error: {
-      message: "이메일 인증을 먼저 완료해주세요.",
+  await User.update(
+    {
+      password: hash,
+      name,
+      phone,
+      major,
+    },
+    { where: { email } },
+  );
+  return res.status(200).json({
+    data: {
+      message: "회원가입이 완료되었습니다.",
     },
   });
 });
 
 auth.post("/sign-in", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const userEmail = await User.findOne({ where: { email } });
-    if (userEmail) {
-      if (!userEmail.email_verify) {
-        return res.status(403).json({
-          error: {
-            message: "이메일을 먼저 인증해 주세요.",
-          },
-        });
-      }
-      const vaildPassword = await bcrypt.compare(password, userEmail.password);
-      if (vaildPassword && userEmail) {
-        const token = sign(
-          {
-            email,
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "1days",
-            issuer: "LikeLion",
-          },
-        );
-        return res.status(200).json({
-          data: {
-            jwt: token,
-          },
-        });
-      }
-      return res.status(403).json({
-        error: {
-          message: "이메일 또는 비밀번호가 바르지 않습니다.",
-        },
-      });
-    }
-    res.status(403).json({
+  // eslint-disable-next-line
+  const { email, password } = req.body;
+  const userEmail = await User.findOne({ where: { email } });
+  if (!userEmail) {
+    // 유저정보가 DB에 없다면
+    return res.status(403).json({
       error: {
         message: "계정이 존재하지 않습니다.",
       },
     });
-  } catch (error) {
-    return res.status(400).json({
+  }
+  if (!userEmail.emailVerify) {
+    // 유저가 이메일인증을 안했다면
+    return res.status(403).json({
       error: {
-        message: "요청이 올바르지 않습니다.",
+        message: "이메일을 먼저 인증해 주세요.",
       },
     });
   }
+  const vaildPassword = await bcrypt.compare(password, userEmail.password);
+  if (!vaildPassword) {
+    // 패스워드가 다르다면
+    return res.status(403).json({
+      error: {
+        message: "이메일 또는 비밀번호가 바르지 않습니다.",
+      },
+    });
+  }
+  const token = sign(
+    {
+      email,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1days",
+      issuer: "LikeLion",
+    },
+  );
+  return res.status(200).json({
+    data: {
+      jwt: token,
+    },
+  });
 });
 
 export default auth;
