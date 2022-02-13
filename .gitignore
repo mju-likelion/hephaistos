@@ -138,5 +138,3 @@ dist
 .svelte-kit
 
 /.idea
-# radis databases
-dump.rdb
