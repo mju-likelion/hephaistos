@@ -15,12 +15,12 @@ apply.get("/", async (req, res) => {
 });
 
 // 지원서 전체 개수
-apply.get("/", async (req, res) => {
+apply.get("/total-count", async (req, res) => {
   res.json("test");
 });
 
 // 지원자 보기
-apply.get("/", async (req, res) => {
+apply.get("/:id", async (req, res) => {
   res.json("test");
 });
 
