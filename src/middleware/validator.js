@@ -1,4 +1,4 @@
-export function signVaildator(req, res, next) {
+export function signValidator(req, res, next) {
   // eslint-disable-next-line
   const { email, password, phone, major, name } = req.body;
   if (!email || !password || !phone || !major || !name) {
@@ -50,7 +50,7 @@ export function signVaildator(req, res, next) {
   return next();
 }
 
-export function emailVaildator(req, res, next) {
+export function emailValidator(req, res, next) {
   // eslint-disable-next-line
   const { email } = req.body;
   const regEmail =

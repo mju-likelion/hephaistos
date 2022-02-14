@@ -5,14 +5,14 @@ import { sign } from "jsonwebtoken";
 import { random, times } from "lodash";
 import nodemailer from "nodemailer";
 
-import { signVaildator, emailVaildator } from "../middleware/validator";
+import { signValidator, emailValidator } from "../middleware/validator";
 import User from "../models/user";
 
 dotenv.config();
 const auth = Router();
 
 // 이메일 인증 보내기 (POST /api/auth/email-verify)
-auth.post("/email-verify", emailVaildator, async (req, res) => {
+auth.post("/email-verify", emailValidator, async (req, res) => {
   // eslint-disable-next-line
   const { email } = req.body;
   const user = await User.findOne({ where: { email } });
@@ -102,7 +102,7 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
 });
 
 // 회원가입(POST /api/auth/sign-up)
-auth.post("/sign-up", signVaildator, async (req, res) => {
+auth.post("/sign-up", signValidator, async (req, res) => {
   // eslint-disable-next-line
   const { email, password, name, phone, major } = req.body;
   const hash = await bcrypt.hash(password, 10);
