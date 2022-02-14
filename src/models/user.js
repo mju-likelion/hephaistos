@@ -6,7 +6,6 @@ class User extends Model {
       {
         name: {
           type: DataTypes.STRING(5),
-          allowNull: false,
         },
         email: {
           type: DataTypes.STRING(30),
@@ -16,27 +15,25 @@ class User extends Model {
           type: DataTypes.BOOLEAN,
           allowNull: false,
         },
+        emailToken: DataTypes.STRING,
         password: {
           type: DataTypes.STRING,
-          allowNull: false,
         },
         phone: {
           type: DataTypes.STRING(15),
-          allowNull: false,
         },
         major: {
           type: DataTypes.STRING(15),
-          allowNull: false,
         },
         status: {
           type: DataTypes.ENUM(
+            "writing",
             "complete",
             "first-fail",
             "first-pass",
             "second-fail",
             "second-pass",
           ),
-          allowNull: false,
         },
       },
       {
