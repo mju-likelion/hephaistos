@@ -6,6 +6,7 @@ import { random, times } from "lodash";
 import nodemailer from "nodemailer";
 
 import { signValidator, emailValidator } from "../middleware/validator";
+import Admin from "../models/admin";
 import User from "../models/user";
 
 dotenv.config();
@@ -16,7 +17,8 @@ auth.post("/email-verify", emailValidator, async (req, res) => {
   // eslint-disable-next-line
   const { email } = req.body;
   const user = await User.findOne({ where: { email } });
-  if (user && !user.emailVerify) {
+  const admin = await Admin.findOne({ where: { email } });
+  if (user && !user.emailVerify && admin) {
     await User.destroy({ where: { email } });
   } else if (user?.email) {
     return res.status(409).json({
@@ -134,7 +136,41 @@ auth.post("/sign-up", signValidator, async (req, res) => {
 auth.post("/sign-in", async (req, res) => {
   // eslint-disable-next-line
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({
+      error: {
+        message: "정상적인 요청이 아닙니다.",
+      },
+    });
+  }
   const userEmail = await User.findOne({ where: { email } });
+  const admin = await Admin.findOne({ where: { email } });
+  if (admin) {
+    const vaildPassword = await bcrypt.compare(password, admin.password);
+    if (vaildPassword) {
+      const token = sign(
+        {
+          email,
+          admin: true,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1days",
+          issuer: "LikeLion",
+        },
+      );
+      return res.json({
+        data: {
+          jwt: token,
+        },
+      });
+    }
+    return res.status(403).json({
+      error: {
+        message: "이메일 또는 비밀번호가 바르지 않습니다.",
+      },
+    });
+  }
   if (!userEmail) {
     // 유저정보가 DB에 없다면
     return res.status(403).json({
