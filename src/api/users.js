@@ -2,11 +2,11 @@ import { Router } from "express";
 
 // import User from "../models/user";
 
-const user = Router();
+const users = Router();
 
 // 유저 정보
-user.get("/:id", async (req, res) => {
+users.get("/:id", async (req, res) => {
   res.json("test");
 });
 
-export default user;
+export default users;

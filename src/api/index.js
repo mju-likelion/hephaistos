@@ -2,8 +2,8 @@ import { Router } from "express";
 
 import applyRouter from "./apply";
 import authRouter from "./auth";
-import questionRouter from "./question";
-import userRouter from "./user";
+import questionRouter from "./questions";
+import userRouter from "./users";
 
 const api = Router();
 
