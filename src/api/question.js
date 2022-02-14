@@ -4,7 +4,7 @@ import { Router } from "express";
 
 const questions = Router();
 
-// 유저 정보
+// 지원서 질문
 questions.get("/:id", async (req, res) => {
   res.json("test");
 });
