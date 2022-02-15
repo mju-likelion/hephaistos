@@ -64,3 +64,35 @@ export function emailValidator(req, res, next) {
   }
   return next();
 }
+
+export function submitValidator(req, res, next) {
+  // eslint-disable-next-line
+  const { apply } = req.body.data;
+  if (!apply) {
+    return res.status(400).json({
+      error: {
+        message: "요청이 올바르지 않습니다.",
+      },
+    });
+  }
+  if (
+    !apply.part ||
+    !apply.one ||
+    !apply.two ||
+    !apply.three ||
+    !apply.four ||
+    !apply.five ||
+    !apply.six ||
+    !apply.seven ||
+    !apply.eight ||
+    !apply.nine ||
+    !apply.ten
+  ) {
+    return res.status(400).json({
+      error: {
+        message: "요청이 올바르지 않습니다.",
+      },
+    });
+  }
+  return next();
+}

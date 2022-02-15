@@ -4,6 +4,10 @@ class Apply extends Model {
   static init(sequelize) {
     return super.init(
       {
+        applyVerify: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+        },
         part: {
           type: DataTypes.ENUM("design", "web", "server"),
           allowNull: false,
