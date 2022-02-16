@@ -25,6 +25,7 @@ export function signValidator(req, res, next) {
     });
   }
   // 8~20자리 이내, 비밀번호는 공백 없이, 영문,숫자,특수문자 혼합
+  // TODO: 각각의 케이스에 대해 에러메세지를 추가해야 함
   if (!regPassword.test(password)) {
     return res.status(400).json({
       error: {

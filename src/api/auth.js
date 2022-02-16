@@ -214,4 +214,13 @@ auth.post("/sign-in", async (req, res) => {
   });
 });
 
+// 비밀번호 초기화 (POST /api/auth/reset-password )
+auth.post("/reset-password", async (req, res) => {
+  res.json(req.body.email);
+});
+
+// 비밀번호 변경 (POST /api/auth/find-password/:emailtoken )
+auth.post("/reset-password", async (req, res) => {
+  res.json(req.body.email);
+});
 export default auth;
