@@ -18,23 +18,49 @@ apply.get("/", async (req, res) => {
     const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
     if (token?.admin) {
       const { query } = parse(req.url, true);
-      const user = await User.findAll({
+      const users = await User.findAll({
+        include: {
+          model: Apply,
+          attributes: [],
+          where: { part: query.part },
+        },
         attributes: ["id", "email", "name", "major"],
         where: {
           status: query.status.split(":"),
-          // part: query.part,
         },
         order: [query.sort.split("_")],
         limit: query?.size ? query.size : 10,
         offset: query?.page ? (query.page - 1) * (query?.size ? query.size : 10) : 1,
       });
+      const userCount = await User.count({
+        include: {
+          model: Apply,
+          attributes: [],
+          where: { part: query.part },
+        },
+        where: {
+          status: query.status.split(":"),
+        },
+      });
       return res.json({
         links: {
-          prev_url: "api주소",
-          next_url: "api주소",
+          prev_uri:
+            query?.page && !(query?.page === "1")
+              ? `/applylists?${parse(req.url, false).query.replace(
+                  `&page=${query.page}`,
+                  `&page=${+query.page - 1}`,
+                )}`
+              : null,
+          next_uri:
+            userCount / (query?.page ? query.page * (query?.size ? query.size : 10) : 1) > 1
+              ? `/applylists?${parse(req.url, false).query.replace(
+                  `&page=${query.page}`,
+                  `&page=${+query.page + 1}`,
+                )}`
+              : null,
         },
         data: {
-          users: user,
+          users,
         },
       });
     }

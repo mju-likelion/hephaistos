@@ -13,7 +13,7 @@ questions.get("/", async (req, res) => {
   });
   res.json({
     data: {
-      questions: Object.values(question.dataValues),
+      questions: Object.values(question?.dataValues),
     },
   });
 });
