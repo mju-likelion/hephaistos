@@ -25,8 +25,8 @@ apply.get("/", async (req, res) => {
           // part: query.part,
         },
         order: [query.sort.split("_")],
-        limit: query?.page ? query.page : 10,
-        offset: query?.offset ? query.offset : 0,
+        limit: query?.size ? query.size : 10,
+        offset: query?.page ? (query.page - 1) * (query?.size ? query.size : 10) : 1,
       });
       return res.json({
         links: {
