@@ -133,6 +133,7 @@ auth.post("/sign-up", signValidator, async (req, res) => {
   });
 });
 
+// 로그인
 auth.post("/sign-in", async (req, res) => {
   // eslint-disable-next-line
   const { email, password } = req.body;
@@ -143,14 +144,14 @@ auth.post("/sign-in", async (req, res) => {
       },
     });
   }
-  const userEmail = await User.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email } });
   const admin = await Admin.findOne({ where: { email } });
   if (admin) {
     const vaildPassword = await bcrypt.compare(password, admin.password);
     if (vaildPassword) {
       const token = sign(
         {
-          email,
+          id: admin.id,
           admin: true,
         },
         process.env.JWT_SECRET,
@@ -171,7 +172,7 @@ auth.post("/sign-in", async (req, res) => {
       },
     });
   }
-  if (!userEmail) {
+  if (!user) {
     // 유저정보가 DB에 없다면
     return res.status(403).json({
       error: {
@@ -179,7 +180,7 @@ auth.post("/sign-in", async (req, res) => {
       },
     });
   }
-  if (!userEmail.emailVerify) {
+  if (!user.emailVerify) {
     // 유저가 이메일인증을 안했다면
     return res.status(403).json({
       error: {
@@ -187,7 +188,7 @@ auth.post("/sign-in", async (req, res) => {
       },
     });
   }
-  const vaildPassword = await bcrypt.compare(password, userEmail.password);
+  const vaildPassword = await bcrypt.compare(password, user.password);
   if (!vaildPassword) {
     // 패스워드가 다르다면
     return res.status(403).json({
@@ -198,7 +199,7 @@ auth.post("/sign-in", async (req, res) => {
   }
   const token = sign(
     {
-      email,
+      id: user.id,
     },
     process.env.JWT_SECRET,
     {
