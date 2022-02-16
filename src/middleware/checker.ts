@@ -34,11 +34,11 @@ export const loginChecker: Handler = (req, res, next) => {
   return next();
 };
 
-type UserJwtPayload = JwtPayload & {
+export type UserJwtPayload = JwtPayload & {
   id: string;
 };
 
-type AdminJwtPayload = UserJwtPayload & {
+export type AdminJwtPayload = UserJwtPayload & {
   isAdmin: boolean;
 };
 
