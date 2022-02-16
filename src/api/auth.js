@@ -147,8 +147,8 @@ auth.post("/sign-in", async (req, res) => {
   const user = await User.findOne({ where: { email } });
   const admin = await Admin.findOne({ where: { email } });
   if (admin) {
-    const vaildPassword = await bcrypt.compare(password, admin.password);
-    if (vaildPassword) {
+    const validPassword = await bcrypt.compare(password, admin.password);
+    if (validPassword) {
       const token = sign(
         {
           id: admin.id,
@@ -188,8 +188,8 @@ auth.post("/sign-in", async (req, res) => {
       },
     });
   }
-  const vaildPassword = await bcrypt.compare(password, user.password);
-  if (!vaildPassword) {
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
     // 패스워드가 다르다면
     return res.status(403).json({
       error: {
