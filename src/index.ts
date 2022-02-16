@@ -3,8 +3,16 @@ import express from "express";
 import authRouter from "./api";
 import models from "./models";
 
+const ENV_LIST = ["JWT_SECRET", "NODEMAILER_USER", "NODEMAILER_PASS", "DATABASE_URL"];
+
 const app = express();
 const port = 3000;
+
+ENV_LIST.forEach(env => {
+  if (!process.env[env]) {
+    throw Error(`${env} 환경변수가 없습니다.`);
+  }
+});
 
 app.get("/", async (req, res) => {
   res.send("hello world");

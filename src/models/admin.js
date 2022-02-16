@@ -4,6 +4,10 @@ class Admin extends Model {
   static init(sequelize) {
     return super.init(
       {
+        name: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
         email: {
           type: DataTypes.STRING,
           allowNull: false,
