@@ -1,5 +1,5 @@
 import { Handler } from "express";
-import { JsonWebTokenError, TokenExpiredError, verify } from "jsonwebtoken";
+import { JsonWebTokenError, JwtPayload, TokenExpiredError, verify } from "jsonwebtoken";
 
 export const loginChecker: Handler = (req, res, next) => {
   const token = req.header("x-access-token");
@@ -29,6 +29,34 @@ export const loginChecker: Handler = (req, res, next) => {
         },
       });
     }
+  }
+
+  return next();
+};
+
+type UserJwtPayload = JwtPayload & {
+  id: string;
+};
+
+type AdminJwtPayload = UserJwtPayload & {
+  isAdmin: boolean;
+};
+
+// loginChecker를 먼저 수행해야 함
+export const adminChecker: Handler = (req, res, next) => {
+  const token = req.header("x-access-token");
+
+  try {
+    const { isAdmin } = verify(token!, process.env.JWT_SECRET!) as AdminJwtPayload;
+    if (!isAdmin) {
+      return res.status(403).json({
+        error: {
+          message: "어드민이 아닙니다.",
+        },
+      });
+    }
+  } catch (e) {
+    console.error(e);
   }
 
   return next();
