@@ -222,12 +222,58 @@ auth.post("/sign-in", loginValidator, async (req, res) => {
 });
 
 // 비밀번호 초기화 (POST /api/auth/reset-password )
-auth.post("/reset-password", async (req, res) => {
-  res.json(req.body.email);
+auth.post("/reset-password", emailValidator, async (req, res) => {
+  // eslint-disable-next-line
+  const { email } = req.body;
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    return res.status(404).json({
+      error: {
+        message: "해당 이메일로 가입된 아이디가 존재하지 않습니다.",
+      },
+    });
+  }
+  if (!user.emailVerify) {
+    return res.status(403).json({
+      error: {
+        message: "이메일 인증을 먼저해주세요",
+      },
+    });
+  }
+  // 토큰 생성
+  let token = times(6, () => random(35).toString(36)).join("");
+  // eslint-disable-next-line
+  while (await User.findOne({ where: { major: token } })) {
+    // DB에 토큰이 같을시 재발행
+    token = times(6, () => random(35).toString(36)).join("");
+  }
+  // 메일 옵션 지정
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    },
+  });
+  // 메일 전송
+  transporter.sendMail({
+    from: `mju@likelion.org`,
+    to: email,
+    subject: "멋쟁이사자처럼 10기 비밀번호 인증",
+    html: `<a href="http://localhost:3000/api/auth/email-verify/${token}">인증하기</a>`,
+  });
+  return res.json({
+    data: {
+      message: "인증용 이메일을 보냈습니다. 이메일을 확인해주세요.",
+    },
+  });
 });
 
-// 비밀번호 변경 (POST /api/auth/find-password/:emailtoken )
-auth.post("/reset-password", async (req, res) => {
-  res.json(req.body.email);
+// 비밀번호 변경 (POST /api/auth/find-password/:emailToken )
+auth.post("/reset-password/:emailToken", async (req, res) => {
+  res.json();
 });
 export default auth;
