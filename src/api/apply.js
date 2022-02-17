@@ -143,11 +143,11 @@ apply.get("/:id", loginChecker, async (req, res) => {
 });
 
 // 임시저장
-apply.put("/", loginChecker, async (req, res) => {
+apply.put("/", loginChecker, submitValidator, async (req, res) => {
   // eslint-disable-next-line
   const applyData = req.body.data.apply;
   const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
-  const user = await User.findOne({ where: { id: token.id } });
+  const user = await User.findOne({ attributes: ["id"], where: { id: token.id } });
   const applyCheck = await Apply.findOne({ where: { userId: user.id } });
   if (applyCheck) {
     if (applyCheck.applyVerify) {
@@ -157,9 +157,34 @@ apply.put("/", loginChecker, async (req, res) => {
         },
       });
     }
-    await Apply.update({
+    await Apply.update(
+      {
+        part: applyData.part,
+        one: applyData.one,
+        two: applyData.two,
+        three: applyData.three,
+        four: applyData.four,
+        five: applyData.five,
+        six: applyData.six,
+        seven: applyData.seven,
+        eight: applyData.eight,
+        nine: applyData.nine,
+        ten: applyData.ten,
+      },
+      { where: { userId: user.id } },
+    );
+    return res.json({
+      data: {
+        message:
+          "지원서가 임시저장 되었습니다. 임시저장만으로는 제출되지않습니다. 최종 제출 이후에는 확인 및 수정이 불가능 합니다.",
+      },
+    });
+  }
+  await Apply.create(
+    {
+      applyVerify: false,
       part: applyData.part,
-      one: applyData.one,
+      one: applyData.part,
       two: applyData.two,
       three: applyData.three,
       four: applyData.four,
@@ -169,29 +194,10 @@ apply.put("/", loginChecker, async (req, res) => {
       eight: applyData.eight,
       nine: applyData.nine,
       ten: applyData.ten,
-    });
-    return res.json({
-      data: {
-        message:
-          "지원서가 임시저장 되었습니다. 임시저장만으로는 제출되지않습니다. 최종 제출 이후에는 확인 및 수정이 불가능 합니다.",
-      },
-    });
-  }
-  await Apply.create({
-    applyVerify: false,
-    part: applyData.part,
-    one: applyData.part,
-    two: applyData.two,
-    three: applyData.three,
-    four: applyData.four,
-    five: applyData.five,
-    six: applyData.six,
-    seven: applyData.seven,
-    eight: applyData.eight,
-    nine: applyData.nine,
-    ten: applyData.ten,
-    userId: user.id,
-  });
+      userId: user.id,
+    },
+    { where: { userId: user.id } },
+  );
   return res.json({
     data: {
       message:
@@ -225,20 +231,23 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
         },
       });
     }
-    await Apply.update({
-      applyVerify: true,
-      part: applyData.part,
-      one: applyData.part,
-      two: applyData.two,
-      three: applyData.three,
-      four: applyData.four,
-      five: applyData.five,
-      six: applyData.six,
-      seven: applyData.seven,
-      eight: applyData.eight,
-      nine: applyData.nine,
-      ten: applyData.ten,
-    });
+    await Apply.update(
+      {
+        applyVerify: true,
+        part: applyData.part,
+        one: applyData.one,
+        two: applyData.two,
+        three: applyData.three,
+        four: applyData.four,
+        five: applyData.five,
+        six: applyData.six,
+        seven: applyData.seven,
+        eight: applyData.eight,
+        nine: applyData.nine,
+        ten: applyData.ten,
+      },
+      { where: { userId: user.id } },
+    );
     transporter.sendMail({
       from: `mju@likelion.org`,
       to: user.email,
@@ -252,24 +261,27 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       },
     });
   }
-  await Apply.create({
-    applyVerify: true,
-    part: applyData.part,
-    one: applyData.part,
-    two: applyData.two,
-    three: applyData.three,
-    four: applyData.four,
-    five: applyData.five,
-    six: applyData.six,
-    seven: applyData.seven,
-    eight: applyData.eight,
-    nine: applyData.nine,
-    ten: applyData.ten,
-    userId: user.id,
-  });
+  await Apply.create(
+    {
+      applyVerify: true,
+      part: applyData.part,
+      one: applyData.one,
+      two: applyData.two,
+      three: applyData.three,
+      four: applyData.four,
+      five: applyData.five,
+      six: applyData.six,
+      seven: applyData.seven,
+      eight: applyData.eight,
+      nine: applyData.nine,
+      ten: applyData.ten,
+      userId: user.id,
+    },
+    { where: { userId: user.id } },
+  );
   transporter.sendMail({
     from: `mju@likelion.org`,
-    to: user.email, // user.email로 변경
+    to: user.email,
     subject: "멋쟁이사자처럼 10기 지원확인 메일",
     html: `<h1>지원해주셔서 감사합니다. ...</h1>`,
   });

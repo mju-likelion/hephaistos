@@ -68,7 +68,15 @@ export function emailValidator(req, res, next) {
 export function submitValidator(req, res, next) {
   // eslint-disable-next-line
   const { apply } = req.body.data;
+  const partCheck = ["web", "design", "server"];
   if (!apply) {
+    return res.status(400).json({
+      error: {
+        message: "요청이 올바르지 않습니다.",
+      },
+    });
+  }
+  if (!partCheck.includes(apply.part)) {
     return res.status(400).json({
       error: {
         message: "요청이 올바르지 않습니다.",
