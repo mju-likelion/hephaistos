@@ -247,6 +247,12 @@ auth.post("/reset-password", emailValidator, async (req, res) => {
     // DB에 토큰이 같을시 재발행
     token = times(6, () => random(35).toString(36)).join("");
   }
+  await User.update(
+    {
+      emailToken: token,
+    },
+    { where: { email } },
+  );
   // 메일 옵션 지정
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -273,7 +279,32 @@ auth.post("/reset-password", emailValidator, async (req, res) => {
 });
 
 // 비밀번호 변경 (POST /api/auth/find-password/:emailToken )
-auth.post("/reset-password/:emailToken", async (req, res) => {
-  res.json();
+auth.post("/reset-password/:emailToken", loginValidator, async (req, res) => {
+  // eslint-disable-next-line
+  const { emailToken } = req.params;
+  // eslint-disable-next-line
+  const { password } = req.body;
+  const hash = await bcrypt.hash(password, 10);
+  const verifyToken = await User.findOne({ where: { emailToken } });
+  if (!verifyToken) {
+    return res.status(404).json({
+      error: {
+        message: "요청이 올바르지 않습니다. 이메일 인증을 다시 시도해주세요.",
+      },
+    });
+  }
+  await User.update(
+    {
+      emailToken: null,
+      password: hash,
+    },
+    { where: { email: verifyToken.email } },
+  );
+  return res.status(200).json({
+    data: {
+      message: "정상적으로 비밀번호가 변경되었습니다. 로그인을 해주세요.",
+      email: verifyToken.email,
+    },
+  });
 });
 export default auth;
