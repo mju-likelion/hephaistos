@@ -5,7 +5,7 @@ import { sign } from "jsonwebtoken";
 import { random, times } from "lodash";
 import nodemailer from "nodemailer";
 
-import { signValidator, emailValidator } from "../middleware/validator";
+import { signValidator, emailValidator, loginValidator } from "../middleware/validator";
 import Admin from "../models/admin";
 import User from "../models/user";
 
@@ -18,9 +18,17 @@ auth.post("/email-verify", emailValidator, async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ where: { email } });
   const admin = await Admin.findOne({ where: { email } });
-  if (user && !user.emailVerify && admin) {
+  if (user && !user.emailVerify) {
     await User.destroy({ where: { email } });
-  } else if (user?.email) {
+  }
+  if (user?.emailVerify) {
+    return res.status(409).json({
+      error: {
+        message: "이미 가입된 이메일입니다. 로그인을 진행해주세요.",
+      },
+    });
+  }
+  if (admin) {
     return res.status(409).json({
       error: {
         message: "이미 가입된 이메일입니다. 로그인을 진행해주세요.",
@@ -85,7 +93,6 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
   }
   await User.update(
     {
-      emailVerify: true,
       emailToken: null,
       password: null,
       name: null,
@@ -97,7 +104,7 @@ auth.post("/email-verify/:emailToken", async (req, res) => {
   );
   return res.status(200).json({
     data: {
-      message: "이메일 인증에 성공하셨습니다. 회원가입을 마무리해주세요.",
+      message: "회원가입을 마무리해주세요.",
       email: verifyToken.email,
     },
   });
@@ -109,8 +116,7 @@ auth.post("/sign-up", signValidator, async (req, res) => {
   const { email, password, name, phone, major } = req.body;
   const hash = await bcrypt.hash(password, 10);
   const userEmail = await User.findOne({ where: { email } });
-  // 디비에 이메일이 존재하지않거나 이메일 인증이 false
-  if (!userEmail || !userEmail?.emailVerify) {
+  if (!userEmail || userEmail.emailToken) {
     return res.status(403).json({
       error: {
         message: "이메일 인증을 먼저 완료해주세요.",
@@ -119,6 +125,7 @@ auth.post("/sign-up", signValidator, async (req, res) => {
   }
   await User.update(
     {
+      emailVerify: true,
       password: hash,
       name,
       phone,
@@ -128,13 +135,13 @@ auth.post("/sign-up", signValidator, async (req, res) => {
   );
   return res.status(200).json({
     data: {
-      message: "회원가입이 완료되었습니다.",
+      message: "이메일인증 및 회원가입이 완료되었습니다.",
     },
   });
 });
 
 // 로그인
-auth.post("/sign-in", async (req, res) => {
+auth.post("/sign-in", loginValidator, async (req, res) => {
   // eslint-disable-next-line
   const { email, password } = req.body;
   if (!email || !password) {
