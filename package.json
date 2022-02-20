@@ -5,11 +5,13 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon -e js,ts src --exec swc-node src/index",
+    "build": "yarn swc src -d build",
     "lint:eslint": "eslint src/**/*.{js,ts}",
     "prepare": "husky install"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",
