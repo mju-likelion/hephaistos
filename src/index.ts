@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 
 import authRouter from "./api";
@@ -13,6 +14,12 @@ ENV_LIST.forEach(env => {
     throw Error(`${env} 환경변수가 없습니다.`);
   }
 });
+
+const corsOptions = {
+  origin: ["https://apply.mju-likelion.com", "https://local-apply.mju-likelion.com:3000"],
+};
+
+app.use(cors(corsOptions));
 
 app.get("/", async (req, res) => {
   res.send("hello world");
