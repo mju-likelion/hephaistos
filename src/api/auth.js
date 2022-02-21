@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { renderFile } from "ejs";
 import { Router } from "express";
 import { sign } from "jsonwebtoken";
 import { random, times } from "lodash";
@@ -12,6 +13,16 @@ import User from "../models/user";
 dotenv.config();
 const auth = Router();
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.NODEMAILER_USER,
+    pass: process.env.NODEMAILER_PASS,
+  },
+});
 // 이메일 인증 보내기 (POST /api/auth/email-verify)
 auth.post("/email-verify", emailValidator, async (req, res) => {
   // eslint-disable-next-line
@@ -35,7 +46,6 @@ auth.post("/email-verify", emailValidator, async (req, res) => {
       },
     });
   }
-
   // 토큰 생성
   let token = times(6, () => random(35).toString(36)).join("");
   // eslint-disable-next-line
@@ -43,23 +53,20 @@ auth.post("/email-verify", emailValidator, async (req, res) => {
     // DB에 토큰이 같을시 재발행
     token = times(6, () => random(35).toString(36)).join("");
   }
-  // 메일 옵션 지정
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.NODEMAILER_USER,
-      pass: process.env.NODEMAILER_PASS,
-    },
+  let emailTemplete;
+  renderFile("src/template/emailVerify.ejs", { token }, (err, data) => {
+    if (err) {
+      return err;
+    }
+    emailTemplete = data;
+    return 0;
   });
   // 메일 전송
   transporter.sendMail({
     from: `mju@likelion.org`,
     to: email,
-    subject: "멋쟁이사자처럼 10기 이메일인증",
-    html: `<a href="http://localhost:3000/api/auth/email-verify/${token}">인증하기</a>`,
+    subject: "멋쟁이사자처럼 이메일인증 메일",
+    html: emailTemplete,
   });
   await User.create({
     email,
@@ -253,23 +260,22 @@ auth.post("/reset-password", emailValidator, async (req, res) => {
     },
     { where: { email } },
   );
-  // 메일 옵션 지정
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.NODEMAILER_USER,
-      pass: process.env.NODEMAILER_PASS,
-    },
+
+  let emailTemplete;
+  renderFile("src/template/emailVerify.ejs", { token }, (err, data) => {
+    // 이메일 인증 html받을시 수정
+    if (err) {
+      return err;
+    }
+    emailTemplete = data;
+    return 0;
   });
   // 메일 전송
   transporter.sendMail({
     from: `mju@likelion.org`,
     to: email,
     subject: "멋쟁이사자처럼 10기 비밀번호 인증",
-    html: `<a href="http://localhost:3000/api/auth/email-verify/${token}">인증하기</a>`,
+    html: emailTemplete,
   });
   return res.json({
     data: {
