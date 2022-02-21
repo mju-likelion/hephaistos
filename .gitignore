@@ -10,6 +10,9 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+# build 디렉토리 전체를 ignore
+build/
+
 # Runtime data
 pids
 *.pid
@@ -138,3 +141,5 @@ dist
 .svelte-kit
 
 /.idea
+
+.DS_Store

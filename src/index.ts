@@ -7,7 +7,7 @@ import models from "./models";
 const ENV_LIST = ["JWT_SECRET", "NODEMAILER_USER", "NODEMAILER_PASS", "DATABASE_URL"];
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT ? +process.env.PORT : 3000;
 
 ENV_LIST.forEach(env => {
   if (!process.env[env]) {
@@ -16,7 +16,7 @@ ENV_LIST.forEach(env => {
 });
 
 const corsOptions = {
-  origin: ["https://apply.mju-likelion.com", "https://local-apply.mju-likelion.com:3000"],
+  origin: [/^https?:\/\/apply.mju-likelion.com$/, /^https?:\/\/local-apply.mju-likelion.com:3000$/],
 };
 
 app.use(cors(corsOptions));

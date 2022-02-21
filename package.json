@@ -7,7 +7,8 @@
     "dev": "nodemon -e js,ts src --exec swc-node src/index",
     "build": "yarn swc src -d build",
     "lint:eslint": "eslint src/**/*.{js,ts}",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "node build/index.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
