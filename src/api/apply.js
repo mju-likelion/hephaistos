@@ -1,6 +1,7 @@
 import { parse } from "url";
 
 import dotenv from "dotenv";
+import { renderFile } from "ejs";
 import { Router } from "express";
 import { verify } from "jsonwebtoken";
 import { omit } from "lodash";
@@ -223,6 +224,14 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       pass: process.env.NODEMAILER_PASS,
     },
   });
+  let emailTemplete;
+  renderFile("src/template/complete.ejs", { user: user.name }, (err, data) => {
+    if (err) {
+      return err;
+    }
+    emailTemplete = data;
+    return 0;
+  });
   if (applyCheck) {
     if (applyCheck.applyVerify) {
       return res.status(403).json({
@@ -252,7 +261,7 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       from: `mju@likelion.org`,
       to: user.email,
       subject: "멋쟁이사자처럼 10기 지원확인 메일",
-      html: `<h1>지원해주셔서 감사합니다. ...</h1>`,
+      html: emailTemplete,
     });
     return res.json({
       data: {
@@ -283,7 +292,7 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
     from: `mju@likelion.org`,
     to: user.email,
     subject: "멋쟁이사자처럼 10기 지원확인 메일",
-    html: `<h1>지원해주셔서 감사합니다. ...</h1>`,
+    html: emailTemplete,
   });
   return res.json({
     data: {
