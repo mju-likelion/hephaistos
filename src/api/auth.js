@@ -166,7 +166,7 @@ auth.post("/sign-in", loginValidator, async (req, res) => {
       const token = sign(
         {
           id: admin.id,
-          admin: true,
+          isAdmin: true,
         },
         process.env.JWT_SECRET,
         {
