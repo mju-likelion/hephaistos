@@ -16,7 +16,7 @@ ENV_LIST.forEach(env => {
 });
 
 const corsOptions = {
-  origin: ["https://apply.mju-likelion.com", "https://local-apply.mju-likelion.com:3000"],
+  origin: [/^https?:\/\/apply.mju-likelion.com$/, /^https?:\/\/local-apply.mju-likelion.com:3000$/],
 };
 
 app.use(cors(corsOptions));
