@@ -3,7 +3,7 @@ import { parse } from "url";
 import { Router } from "express";
 import nodemailer from "nodemailer";
 
-// import { adminChecker } from "../middleware/checker";
+import { adminChecker, loginChecker } from "../middleware/checker";
 import User from "../models/user";
 
 const sendMail = Router();
@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-sendMail.get("/", async (req, res) => {
+sendMail.get("/", loginChecker, adminChecker, async (req, res) => {
   const { query } = parse(req.url, true);
   const status = ["first-fail", "first-pass", "second-fail", "second-pass"];
 
