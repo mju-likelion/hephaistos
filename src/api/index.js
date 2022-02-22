@@ -9,7 +9,7 @@ const api = Router();
 
 api.use("/apply", applyRouter);
 api.use("/auth", authRouter);
-api.use("/question", questionRouter);
+api.use("/questions", questionRouter);
 api.use("/user", userRouter);
 
 export default api;
