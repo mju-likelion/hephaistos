@@ -1,6 +1,7 @@
 import { parse } from "url";
 
 import dotenv from "dotenv";
+import { renderFile } from "ejs";
 import { Router } from "express";
 import { verify } from "jsonwebtoken";
 import { omit } from "lodash";
@@ -28,7 +29,7 @@ apply.get("/", loginChecker, adminChecker, async (req, res) => {
         ? query.status.split(":")
         : ["complete", "first-fail", "first-pass", "second-fail", "second-pass"],
     },
-    order: [query.sort.split("_")],
+    order: query?.sort ? [query.sort.split("_")] : [["name", "asc"]],
     limit: query?.size ? query.size : 10,
     offset: query?.page ? (query.page - 1) * (query?.size ? query.size : 10) : 0,
   });
@@ -223,6 +224,14 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       pass: process.env.NODEMAILER_PASS,
     },
   });
+  let emailTemplete;
+  renderFile("src/template/complete.ejs", { user: user.name }, (err, data) => {
+    if (err) {
+      return err;
+    }
+    emailTemplete = data;
+    return 0;
+  });
   if (applyCheck) {
     if (applyCheck.applyVerify) {
       return res.status(403).json({
@@ -252,7 +261,7 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       from: `mju@likelion.org`,
       to: user.email,
       subject: "멋쟁이사자처럼 10기 지원확인 메일",
-      html: `<h1>지원해주셔서 감사합니다. ...</h1>`,
+      html: emailTemplete,
     });
     return res.json({
       data: {
@@ -283,7 +292,7 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
     from: `mju@likelion.org`,
     to: user.email,
     subject: "멋쟁이사자처럼 10기 지원확인 메일",
-    html: `<h1>지원해주셔서 감사합니다. ...</h1>`,
+    html: emailTemplete,
   });
   return res.json({
     data: {
@@ -291,5 +300,11 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
         "지원서가 제출되었습니다. 가입된 이메일로 지원확인 메일이 발송되었습니다. 최종 제출 이후 확인 및 수정이 불가능 합니다",
     },
   });
+});
+
+apply.put("/:id", loginChecker, adminChecker, async (req, res) => {
+  // eslint-disable-next-line
+  const { id } = req.params;
+  return res.json("test");
 });
 export default apply;
