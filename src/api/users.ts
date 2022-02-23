@@ -10,22 +10,19 @@ const users = Router();
 // 유저 정보
 users.get("/:id", loginChecker, async (req, res) => {
   const token = req.header("x-access-token");
-
   const { id, isAdmin } = verify(token!, process.env.JWT_SECRET!) as AdminJwtPayload;
-
   if (req.params.id === "me") {
     let me;
     if (isAdmin) {
       // @ts-ignore
-      me = await User.findOne({
+      me = await Admin.findOne({
         where: { id },
         attributes: ["name"],
       });
     } else {
       // @ts-ignore
-      me = await Admin.findOne({ where: { id }, attributes: ["name"] });
+      me = await User.findOne({ where: { id }, attributes: ["name"] });
     }
-
     return res.json({
       data: {
         user: {
@@ -50,7 +47,6 @@ users.get("/:id", loginChecker, async (req, res) => {
     where: { id },
     attributes: ["name"],
   });
-
   return res.json({
     data: {
       user: {
