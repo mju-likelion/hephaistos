@@ -55,7 +55,7 @@ apply.get("/", loginChecker, adminChecker, async (req, res) => {
             )}`
           : null,
       next_uri:
-        userCount / (query?.page ? query.page * (query?.size ? query.size : 10) : 1) > 1
+        userCount % (query?.page ? query.page * (query?.size ? query.size : 10) : 1) > 1
           ? `/applylists?${parse(req.url, false).query.replace(
               `&page=${query.page}`,
               `&page=${+query.page + 1}`,
