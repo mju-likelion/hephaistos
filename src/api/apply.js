@@ -96,19 +96,21 @@ apply.get("/:id", loginChecker, async (req, res) => {
       });
     }
     return res.json({
-      data: user,
-      apply: {
-        part: applyData.part,
-        answer: Object.values(
-          omit(applyData.dataValues, [
-            "id",
-            "applyVerify",
-            "part",
-            "createdAt",
-            "updatedAt",
-            "userId",
-          ]),
-        ),
+      data: {
+        user,
+        apply: {
+          part: applyData.part,
+          answer: Object.values(
+            omit(applyData.dataValues, [
+              "id",
+              "applyVerify",
+              "part",
+              "createdAt",
+              "updatedAt",
+              "userId",
+            ]),
+          ),
+        },
       },
     });
   }
