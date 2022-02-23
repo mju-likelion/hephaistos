@@ -71,7 +71,7 @@ apply.get("/", loginChecker, adminChecker, async (req, res) => {
 // 지원서 전체 개수
 apply.get("/total-count", loginChecker, adminChecker, async (req, res) => {
   res.json({
-    mata: {
+    meta: {
       count: await Apply.count(),
     },
   });
