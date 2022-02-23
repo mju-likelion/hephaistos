@@ -100,7 +100,7 @@ apply.get("/:id", loginChecker, async (req, res) => {
         user,
         apply: {
           part: applyData.part,
-          answer: Object.values(
+          answers: Object.values(
             omit(applyData.dataValues, [
               "id",
               "applyVerify",
