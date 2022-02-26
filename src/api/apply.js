@@ -187,7 +187,7 @@ apply.put("/", loginChecker, submitValidator, async (req, res) => {
     {
       applyVerify: false,
       part: applyData.part,
-      one: applyData.part,
+      one: applyData.one,
       two: applyData.two,
       three: applyData.three,
       four: applyData.four,
