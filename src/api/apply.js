@@ -82,14 +82,16 @@ apply.get("/:id", loginChecker, async (req, res) => {
   // eslint-disable-next-line
   const { id } = req.params;
   // eslint-disable-next-line
-  if (isNaN(id)) {
+  if (isNaN(id) && id !== "me") {
     return res.status(403).json({
       error: {
         message: "요청이 올바르지 않습니다.",
       },
     });
   }
+
   const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
+
   if (token?.isAdmin) {
     const user = await User.findOne({
       attributes: ["id", "email", "phone", "name", "major", "status"],
@@ -104,9 +106,9 @@ apply.get("/:id", loginChecker, async (req, res) => {
     }
     const applyData = await Apply.findOne({ where: { userId: user.id } });
     if (!applyData) {
-      return res.status(403).json({
+      return res.status(404).json({
         error: {
-          message: "요청이 올바르지 않습니다.",
+          message: "아직 지원서가 제출된 적이 없습니다. 지원서를 먼저 제출해주세요.",
         },
       });
     }
@@ -129,15 +131,57 @@ apply.get("/:id", loginChecker, async (req, res) => {
       },
     });
   }
+
+  // id === me 면 바로 자기 자신의 apply 반환
+  if (id === "me") {
+    const user = await User.findOne({
+      attributes: ["id", "email", "phone", "name", "major", "status"],
+      where: { id: token.id },
+    });
+    if (!user) {
+      return res.status(403).json({
+        error: {
+          message: "요청이 올바르지 않습니다.",
+        },
+      });
+    }
+    const applyData = await Apply.findOne({ where: { userId: user.id } });
+    if (!applyData) {
+      return res.status(404).json({
+        error: {
+          message: "아직 지원서가 제출된 적이 없습니다. 지원서를 먼저 제출해주세요.",
+        },
+      });
+    }
+    return res.json({
+      data: {
+        user,
+        apply: {
+          part: applyData.part,
+          answers: Object.values(
+            omit(applyData.dataValues, [
+              "id",
+              "applyVerify",
+              "part",
+              "createdAt",
+              "updatedAt",
+              "userId",
+            ]),
+          ),
+        },
+      },
+    });
+  }
+
   const user = await User.findOne({
     attributes: ["id", "email", "phone", "name", "major"],
     where: { id: token.id },
   });
   const applyData = await Apply.findOne({ where: { userId: user.id } });
   if (!applyData) {
-    return res.status(403).json({
+    return res.status(404).json({
       error: {
-        message: "요청이 올바르지 않습니다.",
+        message: "아직 지원서가 제출된 적이 없습니다. 지원서를 먼저 제출해주세요.",
       },
     });
   }
