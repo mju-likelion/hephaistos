@@ -72,7 +72,7 @@ apply.get("/", loginChecker, adminChecker, async (req, res) => {
 apply.get("/total-count", loginChecker, adminChecker, async (req, res) => {
   res.json({
     meta: {
-      count: await Apply.count(),
+      count: await Apply.count({ where: { applyVerify: true } }),
     },
   });
 });
@@ -183,24 +183,21 @@ apply.put("/", loginChecker, submitValidator, async (req, res) => {
       },
     });
   }
-  await Apply.create(
-    {
-      applyVerify: false,
-      part: applyData.part,
-      one: applyData.one,
-      two: applyData.two,
-      three: applyData.three,
-      four: applyData.four,
-      five: applyData.five,
-      six: applyData.six,
-      seven: applyData.seven,
-      eight: applyData.eight,
-      nine: applyData.nine,
-      ten: applyData.ten,
-      userId: user.id,
-    },
-    { where: { userId: user.id } },
-  );
+  await Apply.create({
+    applyVerify: false,
+    part: applyData.part,
+    one: applyData.one,
+    two: applyData.two,
+    three: applyData.three,
+    four: applyData.four,
+    five: applyData.five,
+    six: applyData.six,
+    seven: applyData.seven,
+    eight: applyData.eight,
+    nine: applyData.nine,
+    ten: applyData.ten,
+    userId: user.id,
+  });
   return res.json({
     data: {
       message:
@@ -272,24 +269,21 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       },
     });
   }
-  await Apply.create(
-    {
-      applyVerify: true,
-      part: applyData.part,
-      one: applyData.one,
-      two: applyData.two,
-      three: applyData.three,
-      four: applyData.four,
-      five: applyData.five,
-      six: applyData.six,
-      seven: applyData.seven,
-      eight: applyData.eight,
-      nine: applyData.nine,
-      ten: applyData.ten,
-      userId: user.id,
-    },
-    { where: { userId: user.id } },
-  );
+  await Apply.create({
+    applyVerify: true,
+    part: applyData.part,
+    one: applyData.one,
+    two: applyData.two,
+    three: applyData.three,
+    four: applyData.four,
+    five: applyData.five,
+    six: applyData.six,
+    seven: applyData.seven,
+    eight: applyData.eight,
+    nine: applyData.nine,
+    ten: applyData.ten,
+    userId: user.id,
+  });
   transporter.sendMail({
     from: `mju@likelion.org`,
     to: user.email,
