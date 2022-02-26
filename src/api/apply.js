@@ -81,14 +81,29 @@ apply.get("/total-count", loginChecker, adminChecker, async (req, res) => {
 apply.get("/:id", loginChecker, async (req, res) => {
   // eslint-disable-next-line
   const { id } = req.params;
+  // eslint-disable-next-line
+  if (isNaN(id)) {
+    return res.status(403).json({
+      error: {
+        message: "요청이 올바르지 않습니다.",
+      },
+    });
+  }
   const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
   if (token?.isAdmin) {
     const user = await User.findOne({
       attributes: ["id", "email", "phone", "name", "major", "status"],
       where: { id },
     });
+    if (!user) {
+      return res.status(403).json({
+        error: {
+          message: "요청이 올바르지 않습니다.",
+        },
+      });
+    }
     const applyData = await Apply.findOne({ where: { userId: user.id } });
-    if (!user || !applyData) {
+    if (!applyData) {
       return res.status(403).json({
         error: {
           message: "요청이 올바르지 않습니다.",

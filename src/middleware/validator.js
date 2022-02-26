@@ -102,7 +102,7 @@ export function loginValidator(req, res, next) {
 
 export function submitValidator(req, res, next) {
   // eslint-disable-next-line
-  const { apply } = req.body.data;
+  const apply = req.body?.data?.apply;
   const partCheck = ["web", "design", "server"];
   if (!apply) {
     return res.status(400).json({

@@ -7,7 +7,6 @@ const questions = Router();
 
 // 지원서 질문
 questions.get("/", async (req, res) => {
-  // ['one','two','three','four','five','six','seven','eight','nine','ten']
   const question = await Question.findOne({
     attributes: ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"],
   });
