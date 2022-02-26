@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { renderFile } from "ejs";
 import { Router } from "express";
 import { verify } from "jsonwebtoken";
-import { omit } from "lodash";
+import { isEmpty, omit } from "lodash";
 import nodemailer from "nodemailer";
 
 import { loginChecker, adminChecker } from "../middleware/checker";
@@ -222,16 +222,16 @@ apply.put("/", loginChecker, submitValidator, async (req, res) => {
     await Apply.update(
       {
         part: applyData.part,
-        one: applyData.one,
-        two: applyData.two,
-        three: applyData.three,
-        four: applyData.four,
-        five: applyData.five,
-        six: applyData.six,
-        seven: applyData.seven,
-        eight: applyData.eight,
-        nine: applyData.nine,
-        ten: applyData.ten,
+        one: isEmpty(applyData.one) ? null : applyData.one,
+        two: isEmpty(applyData.two) ? null : applyData.two,
+        three: isEmpty(applyData.three) ? null : applyData.three,
+        four: isEmpty(applyData.four) ? null : applyData.four,
+        five: isEmpty(applyData.five) ? null : applyData.five,
+        six: isEmpty(applyData.six) ? null : applyData.six,
+        seven: isEmpty(applyData.seven) ? null : applyData.seven,
+        eight: isEmpty(applyData.eight) ? null : applyData.eight,
+        nine: isEmpty(applyData.nine) ? null : applyData.nine,
+        ten: isEmpty(applyData.ten) ? null : applyData.ten,
       },
       { where: { userId: user.id } },
     );
@@ -245,16 +245,16 @@ apply.put("/", loginChecker, submitValidator, async (req, res) => {
   await Apply.create({
     applyVerify: false,
     part: applyData.part,
-    one: applyData.one,
-    two: applyData.two,
-    three: applyData.three,
-    four: applyData.four,
-    five: applyData.five,
-    six: applyData.six,
-    seven: applyData.seven,
-    eight: applyData.eight,
-    nine: applyData.nine,
-    ten: applyData.ten,
+    one: isEmpty(applyData.one) ? null : applyData.one,
+    two: isEmpty(applyData.two) ? null : applyData.two,
+    three: isEmpty(applyData.three) ? null : applyData.three,
+    four: isEmpty(applyData.four) ? null : applyData.four,
+    five: isEmpty(applyData.five) ? null : applyData.five,
+    six: isEmpty(applyData.six) ? null : applyData.six,
+    seven: isEmpty(applyData.seven) ? null : applyData.seven,
+    eight: isEmpty(applyData.eight) ? null : applyData.eight,
+    nine: isEmpty(applyData.nine) ? null : applyData.nine,
+    ten: isEmpty(applyData.ten) ? null : applyData.ten,
     userId: user.id,
   });
   return res.json({
@@ -302,16 +302,16 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       {
         applyVerify: true,
         part: applyData.part,
-        one: applyData.one,
-        two: applyData.two,
-        three: applyData.three,
-        four: applyData.four,
-        five: applyData.five,
-        six: applyData.six,
-        seven: applyData.seven,
-        eight: applyData.eight,
-        nine: applyData.nine,
-        ten: applyData.ten,
+        one: isEmpty(applyData.one) ? null : applyData.one,
+        two: isEmpty(applyData.two) ? null : applyData.two,
+        three: isEmpty(applyData.three) ? null : applyData.three,
+        four: isEmpty(applyData.four) ? null : applyData.four,
+        five: isEmpty(applyData.five) ? null : applyData.five,
+        six: isEmpty(applyData.six) ? null : applyData.six,
+        seven: isEmpty(applyData.seven) ? null : applyData.seven,
+        eight: isEmpty(applyData.eight) ? null : applyData.eight,
+        nine: isEmpty(applyData.nine) ? null : applyData.nine,
+        ten: isEmpty(applyData.ten) ? null : applyData.ten,
       },
       { where: { userId: user.id } },
     );
@@ -331,16 +331,16 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
   await Apply.create({
     applyVerify: true,
     part: applyData.part,
-    one: applyData.one,
-    two: applyData.two,
-    three: applyData.three,
-    four: applyData.four,
-    five: applyData.five,
-    six: applyData.six,
-    seven: applyData.seven,
-    eight: applyData.eight,
-    nine: applyData.nine,
-    ten: applyData.ten,
+    one: isEmpty(applyData.one) ? null : applyData.one,
+    two: isEmpty(applyData.two) ? null : applyData.two,
+    three: isEmpty(applyData.three) ? null : applyData.three,
+    four: isEmpty(applyData.four) ? null : applyData.four,
+    five: isEmpty(applyData.five) ? null : applyData.five,
+    six: isEmpty(applyData.six) ? null : applyData.six,
+    seven: isEmpty(applyData.seven) ? null : applyData.seven,
+    eight: isEmpty(applyData.eight) ? null : applyData.eight,
+    nine: isEmpty(applyData.nine) ? null : applyData.nine,
+    ten: isEmpty(applyData.ten) ? null : applyData.ten,
     userId: user.id,
   });
   transporter.sendMail({
