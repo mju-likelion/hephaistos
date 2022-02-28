@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { isEmpty } from "lodash";
 
+import { loginChecker, adminChecker } from "../middleware/checker";
 import Question from "../models/question";
 
 const questions = Router();
@@ -17,7 +18,7 @@ questions.get("/", async (req, res) => {
   });
 });
 
-questions.put("/", async (req, res) => {
+questions.put("/", loginChecker, adminChecker, async (req, res) => {
   // eslint-disable-next-line
   const { questions } = req.body?.data;
   if (!questions) {
@@ -40,7 +41,7 @@ questions.put("/", async (req, res) => {
       nine: isEmpty(questions[8]) ? null : questions[8],
       ten: isEmpty(questions[9]) ? null : questions[9],
     },
-    { where: { id: 2 } },
+    { where: { id: 1 } },
   );
   return res.json({
     data: {
