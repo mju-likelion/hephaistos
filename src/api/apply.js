@@ -91,7 +91,6 @@ apply.get("/:id", loginChecker, async (req, res) => {
   }
 
   const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
-
   if (token?.isAdmin) {
     const user = await User.findOne({
       attributes: ["id", "email", "phone", "name", "major", "status"],
@@ -315,6 +314,12 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       },
       { where: { userId: user.id } },
     );
+    await User.update(
+      {
+        status: "complete",
+      },
+      { where: { id: user.id } },
+    );
     transporter.sendMail({
       from: `mju@likelion.org`,
       to: user.email,
@@ -343,6 +348,12 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
     ten: isEmpty(applyData.ten) ? null : applyData.ten,
     userId: user.id,
   });
+  await User.update(
+    {
+      status: "complete",
+    },
+    { where: { id: user.dataValues.id } },
+  );
   transporter.sendMail({
     from: `mju@likelion.org`,
     to: user.email,
