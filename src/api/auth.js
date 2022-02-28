@@ -130,6 +130,13 @@ auth.post("/sign-up", signValidator, async (req, res) => {
       },
     });
   }
+  if (userEmail.emailVerify) {
+    return res.status(409).json({
+      error: {
+        message: "이미 가입된 이메일입니다. 로그인을 진행해주세요.",
+      },
+    });
+  }
   await User.update(
     {
       emailVerify: true,
