@@ -57,6 +57,7 @@ class Apply extends Model {
     db.Apply.belongsTo(db.User, {
       foreignKey: { name: "userId", allowNull: false },
       sourceKey: "id",
+      onDelete: "CASCADE",
     });
   }
 }
