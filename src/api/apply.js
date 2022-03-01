@@ -29,7 +29,7 @@ apply.get("/", loginChecker, adminChecker, async (req, res) => {
         ? query.status.split(":")
         : ["complete", "first-fail", "first-pass", "second-fail", "second-pass"],
     },
-    order: query?.sort ? [query.sort.split("_")] : [["name", "asc"]],
+    order: query?.sort ? [query.sort.split("_")] : [["updatedAt", "asc"]],
     limit: query?.size ? query.size : 10,
     offset: query?.page ? (query.page - 1) * (query?.size ? query.size : 10) : 0,
   });
@@ -373,4 +373,5 @@ apply.put("/:id", loginChecker, adminChecker, async (req, res) => {
   const { id } = req.params;
   return res.json("test");
 });
+
 export default apply;
