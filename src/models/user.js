@@ -9,6 +9,7 @@ class User extends Model {
         },
         email: {
           type: DataTypes.STRING(30),
+          unique: true,
           allowNull: false,
         },
         emailVerify: {
