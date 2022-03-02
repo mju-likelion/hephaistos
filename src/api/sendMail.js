@@ -36,7 +36,7 @@ sendMail.get("/", loginChecker, adminChecker, async (req, res) => {
     },
     raw: true,
   });
-  transporter.sendMail({
+  await transporter.sendMail({
     from: `mju@likelion.org`,
     to: firstFailUsers.map(user => user.email),
     subject: `멋쟁이사자처럼 ${

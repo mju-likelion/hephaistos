@@ -62,7 +62,7 @@ auth.post("/email-verify", emailValidator, async (req, res) => {
     return 0;
   });
   // 메일 전송
-  transporter.sendMail({
+  await transporter.sendMail({
     from: `mju@likelion.org`,
     to: email,
     subject: "멋쟁이사자처럼 이메일인증 메일",
@@ -278,7 +278,7 @@ auth.post("/reset-password", emailValidator, async (req, res) => {
     return 0;
   });
   // 메일 전송
-  transporter.sendMail({
+  await transporter.sendMail({
     from: `mju@likelion.org`,
     to: email,
     subject: "멋쟁이사자처럼 10기 비밀번호 인증",

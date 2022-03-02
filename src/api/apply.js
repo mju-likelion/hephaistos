@@ -320,7 +320,7 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
       },
       { where: { id: user.id } },
     );
-    transporter.sendMail({
+    await transporter.sendMail({
       from: `mju@likelion.org`,
       to: user.email,
       subject: "멋쟁이사자처럼 10기 지원확인 메일",
@@ -354,7 +354,7 @@ apply.post("/", loginChecker, submitValidator, async (req, res) => {
     },
     { where: { id: user.dataValues.id } },
   );
-  transporter.sendMail({
+  await transporter.sendMail({
     from: `mju@likelion.org`,
     to: user.email,
     subject: "멋쟁이사자처럼 10기 지원확인 메일",
