@@ -24,7 +24,7 @@ class User extends Model {
           type: DataTypes.STRING(15),
         },
         major: {
-          type: DataTypes.STRING(15),
+          type: DataTypes.STRING(30),
         },
         status: {
           type: DataTypes.ENUM(
