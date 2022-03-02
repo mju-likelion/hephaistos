@@ -50,10 +50,10 @@ export function signValidator(req, res, next) {
       },
     });
   }
-  if (major.length > 15) {
+  if (major.length > 30) {
     return res.status(400).json({
       error: {
-        message: "major는 15자이하를 입력해주세요.",
+        message: "major는 30자이하를 입력해주세요.",
       },
     });
   }
