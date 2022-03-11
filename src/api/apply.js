@@ -8,6 +8,7 @@ import { isEmpty, omit } from "lodash";
 import nodemailer from "nodemailer";
 
 import { loginChecker, adminChecker } from "../middleware/checker";
+import { dateChecker } from "../middleware/timeLimit";
 import { submitValidator } from "../middleware/validator";
 import Apply from "../models/apply";
 import User from "../models/user";
@@ -204,7 +205,7 @@ apply.get("/:id", loginChecker, async (req, res) => {
 });
 
 // 임시저장
-apply.put("/", loginChecker, submitValidator, async (req, res) => {
+apply.put("/", dateChecker, loginChecker, submitValidator, async (req, res) => {
   // eslint-disable-next-line
   const applyData = req.body.data.apply;
   const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
@@ -265,7 +266,7 @@ apply.put("/", loginChecker, submitValidator, async (req, res) => {
 });
 
 // 제출
-apply.post("/", loginChecker, submitValidator, async (req, res) => {
+apply.post("/", dateChecker, loginChecker, submitValidator, async (req, res) => {
   // eslint-disable-next-line
   const applyData = req.body.data.apply;
   const token = verify(req.header("X-Access-Token"), process.env.JWT_SECRET);
