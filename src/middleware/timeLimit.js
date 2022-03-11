@@ -1,8 +1,7 @@
-require("date-utils");
+import { format } from "date-fns";
 
 export function dateChecker(req, res, next) {
-  const newDate = new Date();
-  const time = newDate.toFormat("YYYY-MM-DD");
+  const time = format(new Date(), "yyyy-MM-dd");
   if (time >= "2022-03-12") {
     return res.status(403).json({
       error: {
