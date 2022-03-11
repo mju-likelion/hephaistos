@@ -320,4 +320,5 @@ auth.post("/reset-password/:emailToken", loginValidator, async (req, res) => {
     },
   });
 });
+
 export default auth;
