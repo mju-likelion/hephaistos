@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 sendMail.get("/", loginChecker, adminChecker, async (req, res) => {
   const { query } = parse(req.url, true);
-  const status = ["first-fail", "first-pass", "second-fail", "second-pass"];
+  const status = ["first-fail", "first-pass", "second-fail", "second-pass", "complete"];
 
   if (!status.includes(query.status)) {
     return res.status(400).json({
