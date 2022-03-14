@@ -38,7 +38,8 @@ sendMail.get("/", loginChecker, adminChecker, async (req, res) => {
   });
   await transporter.sendMail({
     from: `mju@likelion.org`,
-    to: firstFailUsers.map(user => user.email),
+    to: "tarrazu@likelion.org",
+    bcc: firstFailUsers.map(user => user.email),
     subject: `멋쟁이사자처럼 ${
       query.status.includes("first") ? "1차" : "최종"
     }결과 안내 메일입니다.`,
